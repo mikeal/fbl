@@ -1,0 +1,56 @@
+{
+  "types": {
+    "Lengths": {
+      "kind": "list",
+      "valueType": "Int"
+    },
+    "ByteUnionList": {
+      "kind": "list",
+      "valueType": {
+        "kind": "link",
+        "expectedType": "BytesUnion"
+      }
+    },
+    "NestedByteList": {
+      "kind": "struct",
+      "fields": {
+        "lengths": {
+          "type": "Lengths"
+        },
+        "parts": {
+          "type": "ByteUnionList"
+        },
+        "algo": {
+          "type": "String",
+          "optional": true
+        }
+      },
+      "representation": {
+        "map": {}
+      }
+    },
+    "BytesUnion": {
+      "kind": "union",
+      "representation": {
+        "kinded": {
+          "bytes": "Bytes",
+          "map": "NestedByteList"
+        }
+      }
+    },
+    "FlexibleByteLayout": {
+      "kind": "struct",
+      "fields": {
+        "bytes": {
+          "type": "BytesUnion"
+        },
+        "size": {
+          "type": "Int"
+        }
+      },
+      "representation": {
+        "map": {}
+      }
+    }
+  }
+}
