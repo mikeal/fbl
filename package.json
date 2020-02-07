@@ -2,7 +2,7 @@
   "name": "js-fbl",
   "version": "0.0.0",
   "description": "`Flexible Byte Layout` is an advanced layout for representing binary data.",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "ipld-schema to-json README.md > schema.json"
   },
