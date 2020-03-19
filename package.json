@@ -4,12 +4,19 @@
   "description": "`Flexible Byte Layout` is an advanced layout for representing binary data.",
   "main": "src/index.js",
   "scripts": {
-    "build": "ipld-schema to-json README.md > schema.json"
+    "build:schema": "ipld-schema to-json README.md > src/schema.json",
+    "test": "mocha test/test-*.js"
   },
   "keywords": [],
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com> (https://www.mikealrogers.com/)",
   "license": "(Apache-2.0 AND MIT)",
   "dependencies": {
-    "@ipld/schema-gen": "^0.1.0"
+    "@ipld/block": "^2.1.4",
+    "ipld-schema": "^0.3.2",
+    "ipld-schema-validation": "^0.1.0"
+  },
+  "devDependencies": {
+    "mocha": "^7.1.1",
+    "standard": "^14.3.3"
   }
 }

@@ -8,7 +8,7 @@
       "kind": "list",
       "valueType": {
         "kind": "link",
-        "expectedType": "BytesUnion"
+        "expectedType": "FlexibleByteLayout"
       }
     },
     "NestedByteList": {
@@ -29,27 +29,13 @@
         "map": {}
       }
     },
-    "BytesUnion": {
+    "FlexibleByteLayout": {
       "kind": "union",
       "representation": {
         "kinded": {
           "bytes": "Bytes",
           "map": "NestedByteList"
         }
-      }
-    },
-    "FlexibleByteLayout": {
-      "kind": "struct",
-      "fields": {
-        "bytes": {
-          "type": "BytesUnion"
-        },
-        "size": {
-          "type": "Int"
-        }
-      },
-      "representation": {
-        "map": {}
       }
     }
   }

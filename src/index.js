@@ -1,4 +1,4 @@
 const bare = require('./bare')
 const Block = require('@ipld/block')
 
-module.exports = (...args) => bare(Block, ...args)
+module.exports = bare(Block, 'dag-cbor')

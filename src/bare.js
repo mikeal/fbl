@@ -1,83 +1,52 @@
-const gen = require('@ipld/schema-gen')
-const schema = require('../schema.json')
+const validate = require('../../ipld-schema-validation')(require('./schema.json'))
 
 const sum = (x, y) => x + y
 
-const defaults = { codec: 'dag-cbor' }
-
-const getHead = (parts, size) => {
-  const head = []
-  let total = 0
-  for (let i=parts.length-1;i>-1;i--) {
-    head.push(parts[i])
-    total += parts[i][1]
-    if (total === size) return head.reverse()
-  }
-
-const create = (Block, opts={}) => {
-  opts = {...defaults, ...opts}
-  const types = gen(schema)
-  console.log(types)
-
-  class FBL extends types.FlexibleByteLayout {
-    async read (start=0, end=null) {
-      if (end === null) end = await this.get('size')
-    }
-  }
-  gen.annotate(FBL)
-
-  FBL.fromParts = async function * (parts, algo, limit=400) {
-    const { FlexibleByteLayout } = types
-
-    const nbls = []
-    let parts = []
-    for await (const [cid, size] of parts) {
-      parts.push([cid, size])
-      if (parts.length >= limit) {
-        const lengths = parts.map(p => p[1])
-        parts = parts.map(p => p[0])
-        const nbl = types.NestedByteList.encoder({lengths, parts, algo})
-        const size = lengths.reduce(sum, 0)
-        const block = nbl.block()
-        yield [ block, size ]
-        nbls.push([await block.cid(), size])
+module.exports = (Block, codec) => {
+  const balanced = async function * (parts, opts) {
+    parts = [...parts]
+    const limit = opts.limit || 1000
+    if (parts.length > limit) {
+      const size = Math.ceil(parts.length / Math.ceil(parts.length / limit))
+      const subparts = []
+      while (parts.length) {
+        const chunk = parts.splice(0, size)
+        const length = chunk.map(([l]) => l).reduce(sum)
+        let last
+        for await (const block of balanced(chunk, opts)) {
+          yield block
+          last = block
+        }
+        subparts.push([length, await last.cid()])
       }
+      parts = subparts
     }
-    if (nbls.length > limit) {
-      yield * FBL.fromParts(nbls, algo, limit)
+    const data = { lengths: [], parts: [], algo: 'balanced' }
+    for (const [length, cid] of parts) {
+      data.lengths.push(length)
+      data.parts.push(cid)
     }
+    validate(data, 'FlexibleByteLayout')
+    yield Block.encoder(data, 'dag-cbor')
   }
-  FBL.fromGenerator = async function * (iter, limit=400, algo='fg') {
-    let size = 0
-    let parts = []
-    algo = ['b-v1', 'l400', algo].join('-')
-    for await (const chunk of iter) {
-      size += chunk.length
-      const block = Block.encoder(chunk, 'raw')
+  const fromGenerator = async function * (gen, algo = balanced, opts = {}) {
+    if (Buffer.isBuffer(gen)) {
+      yield Block.encoder(gen, 'dag-cbor')
+      return
+    }
+    const parts = []
+    for await (const buffer of gen) {
+      const block = Block.encoder(buffer, 'raw')
       yield block
-      parts.push([await block.cid(), chunk.length])
+      parts.push([buffer.length, await block.cid()])
     }
-    if (parts.length < limit) {
-      const lengths = parts.map(p => p[1])
-      parts = parts.map(p => p[0])
-      const nbl = NBL.encoder({bytes: {parts, algo, lengths}, size)
-      yield nbl.block()
-    } else {
-      const nbls = []
-      for await (const [block, size] of FBL.fromParts(parts, algo, limit)) {
-        yield block
-        nbls.push([await block.cid(), size])
-      }
-      parts = getHead(nbls)
-      const lengths = parts.map(p => p[1])
-      parts = parts.map(p => p[0])
-      const nbl = NBL.encoder({bytes: {parts, algo, lengths}, size})
-      yield nbl.block()
-    }
+    yield * algo(parts, opts)
   }
-  FBL.fromBuffer = async buffer => {
-    return FBL.encoder({bytes: buffer, size: buffer.length})
+  const size = block => {
+    const data = Block.isBlock(block) ? block.decode() : block
+    validate(data, 'FlexibleByteLayout')
+    if (Buffer.isBuffer(data)) return data.length
+    return data.lengths.reduce(sum)
   }
+  return { from: fromGenerator, balanced, size }
 }
-
-module.exports = create
