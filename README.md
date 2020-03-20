@@ -17,26 +17,32 @@ for await (const block of fbl.from(stream)) {
 
 ## API
 
-### `fs.from(asyncIterable)`
+### `fs.from(asyncIterable, algorithm=balanced())`
 
 This method returns an async iterable of [`Block`](https://github.com/ipld/js-block) instances.
 
 It accepts any async iterable, but the iterable must only yield instances of `Buffer`.
+
+The algorithm is an async generator that takes an array of `[ length, cid ]` tuples and yields `Block` instances.
+
+The default algorithm is for a balanced tree with a default limit of 1000 chunk references per block.
 
 ### `fs.size(buffer|block|decodedBlockData)`
 
 This method returns the size of a given FBL. It accepts either a buffer,
 [`Block`](https://github.com/ipld/js-block) instance or the data for an FBL root block.
 
-### `fs.read(root, get, algorithm=balanced())`
+### `fs.read(root, get, start=0, end=Infinity)`
+
+`read` returns and async generator that will yield `Buffer` instance for every chunk within
+the `start` and `end` boundaries.
 
 `root` is a root block, CID, or decoded block for the root of the FBL tree.
 
 `get` is `async cid => Block()`, and async function that takes a `CID` instance and returns a `Block` instance.
 
-The algorithm is an async generator that takes an array of `[ length, cid ]` tuples and yields `Block` instances.
-
-The default algorithm is for a balanced tree with a default limit of 1000 chunk references per block.
+`start` and `end` are the offsets to slice out of the data. Any `end` offset larger than the total size of
+the FBL will read to the end of the FBL and finish without throwing an exception.
 
 ### `fs.balanced(limit=1000)`
 
