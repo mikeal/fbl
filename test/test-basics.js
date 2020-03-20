@@ -26,7 +26,7 @@ test('basic inline buffer', async () => {
 const testMany = async (i, limit) => {
   const blocks = { 'dag-cbor': [], raw: [] }
   let last
-  const balanced = main.balanced({limit})
+  const balanced = main.balanced({ limit })
   for await (const block of main.from(mkgen(i), balanced)) {
     const cid = await block.cid()
     blocks[cid.codec].push(block)
@@ -74,10 +74,16 @@ const read = async (...args) => toBuffer(main.read(...args))
 test('read inline', async () => {
   same(await read(chunk), chunk)
   same(await read(Block.encoder(chunk, 'raw')), chunk)
+  const single = async function * () { yield chunk }
+  const [get, root] = await load(main.from(single()))
+  const data = await read(root, get)
+  const comp = await toBuffer(single())
+  same(data.length, comp.length)
+  assert.ok(!Buffer.compare(data, comp))
 })
 
 test('read nested full', async () => {
-  const balanced = main.balanced({limit: 100})
+  const balanced = main.balanced({ limit: 100 })
   const [get, root] = await load(main.from(mkgen(500), balanced))
   const data = await read(root, get)
   const comp = await toBuffer(mkgen(500))
@@ -87,7 +93,7 @@ test('read nested full', async () => {
 
 test('read nested sliding', async () => {
   const buffer = await randomBytes(1024)
-  const balanced = main.balanced({limit: 2})
+  const balanced = main.balanced({ limit: 2 })
   const [get, root] = await load(main.from(mkgen(10, buffer), balanced))
   const data = await read(root, get)
   const comp = await toBuffer(mkgen(10, buffer))

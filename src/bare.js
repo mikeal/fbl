@@ -6,7 +6,7 @@ const isCID = node => !!(node && node[cidSymbol])
 const sum = (x, y) => x + y
 
 module.exports = (Block, codec) => {
-  const balanced = (opts={}) => async function * (parts) {
+  const balanced = (opts = {}) => async function * (parts) {
     parts = [...parts]
     const limit = opts.limit || 1000
     if (parts.length > limit) {
