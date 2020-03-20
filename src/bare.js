@@ -1,4 +1,4 @@
-const validate = require('../../ipld-schema-validation')(require('./schema.json'))
+const validate = require('ipld-schema-validation')(require('./schema.json'))
 
 const sum = (x, y) => x + y
 
@@ -21,13 +21,8 @@ module.exports = (Block, codec) => {
       }
       parts = subparts
     }
-    const data = { lengths: [], parts: [], algo: 'balanced' }
-    for (const [length, cid] of parts) {
-      data.lengths.push(length)
-      data.parts.push(cid)
-    }
-    validate(data, 'FlexibleByteLayout')
-    yield Block.encoder(data, 'dag-cbor')
+    validate(parts, 'FlexibleByteLayout')
+    yield Block.encoder(parts, 'dag-cbor')
   }
   const fromGenerator = async function * (gen, algo = balanced, opts = {}) {
     if (Buffer.isBuffer(gen)) {
@@ -46,7 +41,7 @@ module.exports = (Block, codec) => {
     const data = Block.isBlock(block) ? block.decode() : block
     validate(data, 'FlexibleByteLayout')
     if (Buffer.isBuffer(data)) return data.length
-    return data.lengths.reduce(sum)
+    return data.map(([l]) => l).reduce(sum)
   }
   return { from: fromGenerator, balanced, size }
 }
