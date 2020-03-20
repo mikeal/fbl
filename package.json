@@ -12,6 +12,7 @@
   "license": "(Apache-2.0 AND MIT)",
   "dependencies": {
     "@ipld/block": "^2.1.4",
+    "hundreds": "0.0.2",
     "ipld-schema": "^0.3.2",
     "ipld-schema-validation": "^0.3.0"
   },
