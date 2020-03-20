@@ -28,6 +28,20 @@ It accepts any async iterable, but the iterable must only yield instances of `Bu
 This method returns the size of a given FBL. It accepts either a buffer,
 [`Block`](https://github.com/ipld/js-block) instance or the data for an FBL root block.
 
+### `fs.read(root, get, algorithm=balanced())`
+
+`root` is a root block, CID, or decoded block for the root of the FBL tree.
+
+`get` is `async cid => Block()`, and async function that takes a `CID` instance and returns a `Block` instance.
+
+The algorithm is an async generator that takes an array of `[ length, cid ]` tuples and yields `Block` instances.
+
+The default algorithm is for a balanced tree with a default limit of 1000 chunk references per block.
+
+### `fs.balanced(limit=1000)`
+
+This method returns an async generator for a balanced tree with no more than `limit` part references per block.
+
 # Schema
 
 ```sh
