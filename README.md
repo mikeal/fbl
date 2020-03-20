@@ -2,6 +2,34 @@
 
 It is flexible enough to support very small and very large (multi-block) binary data.
 
+# Usage
+
+```javascript
+const fbl = require('@ipld/fbl')
+const fs = require('fs')
+
+const stream = fs.createReadStream('path/to/file')
+
+for await (const block of fbl.from(stream)) {
+  storage.put(block)
+}
+```
+
+## API
+
+### `fs.from(asyncIterable)`
+
+This method returns an async iterable of [`Block`](https://github.com/ipld/js-block) instances.
+
+It accepts any async iterable, but the iterable must only yield instances of `Buffer`.
+
+### `fs.size(buffer|block|decodedBlockData)`
+
+This method returns the size of a given FBL. It accepts either a buffer,
+[`Block`](https://github.com/ipld/js-block) instance or the data for an FBL root block.
+
+# Schema
+
 ```sh
 type NestedByte struct {
   length Int
