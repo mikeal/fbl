@@ -6,9 +6,8 @@ const isCID = node => !!(node && node[cidSymbol])
 const sum = (x, y) => x + y
 
 module.exports = (Block, codec) => {
-  const balanced = (opts = {}) => async function * (parts) {
+  const balanced = (limit=1000) => async function * (parts) {
     parts = [...parts]
-    const limit = opts.limit || 1000
     if (parts.length > limit) {
       const size = Math.ceil(parts.length / Math.ceil(parts.length / limit))
       const subparts = []
@@ -16,7 +15,7 @@ module.exports = (Block, codec) => {
         const chunk = parts.splice(0, size)
         const length = chunk.map(([l]) => l).reduce(sum)
         let last
-        for await (const block of balanced(opts)(chunk)) {
+        for await (const block of balanced(limit)(chunk)) {
           yield block
           last = block
         }
