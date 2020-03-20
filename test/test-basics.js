@@ -17,16 +17,7 @@ const mkgen = async function * (length) {
 const sum = (x, y) => x + y
 
 test('basic inline buffer', async () => {
-  let block
-  for await (const _block of main.from(chunk)) {
-    if (block) throw new Error('Too many yields')
-    block = _block
-  }
-  const cid = await block.cid()
-  same(cid.codec, 'dag-cbor')
-  same(chunk, block.decode())
-  same(chunk.length, block.decode().length)
-  same(chunk.length, main.size(block.decode()))
+  same(chunk.length, main.size(chunk))
 })
 
 const testMany = async (i, limit) => {

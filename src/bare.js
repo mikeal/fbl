@@ -25,11 +25,7 @@ module.exports = (Block, codec) => {
     yield Block.encoder(parts, 'dag-cbor')
   }
   const fromGenerator = async function * (gen, algo = balanced, opts = {}) {
-    if (Buffer.isBuffer(gen)) {
-      yield Block.encoder(gen, 'dag-cbor')
-      return
-    }
-    const parts = []
+   const parts = []
     for await (const buffer of gen) {
       const block = Block.encoder(buffer, 'raw')
       yield block
