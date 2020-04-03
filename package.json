@@ -1,6 +1,6 @@
 {
   "name": "@ipld/fbl",
-  "version": "0.0.0",
+  "version": "0.0.0-dev",
   "description": "`Flexible Byte Layout` is an advanced layout for representing binary data.",
   "main": "src/index.js",
   "scripts": {
