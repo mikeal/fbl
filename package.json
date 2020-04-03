@@ -7,19 +7,21 @@
     "build:schema": "ipld-schema to-json README.md > src/schema.json",
     "coverage": "nyc --reporter=html mocha test/test-*.js && npx http-server coverage",
     "pre:test": "standard",
+    "test:browser": "polendina --cleanup test/test-*.js",
     "test": "hundreds mocha test/test-*.js"
   },
   "keywords": [],
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com> (https://www.mikealrogers.com/)",
   "license": "(Apache-2.0 AND MIT)",
   "dependencies": {
-    "@ipld/block": "^2.1.4",
-    "ipld-schema-validation": "^0.3.0"
+    "@ipld/block": "^3.0.0",
+    "ipld-schema-validation": "^0.3.4"
   },
   "devDependencies": {
     "hundreds": "0.0.2",
     "ipld-schema": "^0.3.2",
     "mocha": "^7.1.1",
+    "polendina": "^1.0.0",
     "standard": "^14.3.3"
   }
 }

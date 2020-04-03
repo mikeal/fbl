@@ -1,4 +1,6 @@
-const validate = require('ipld-schema-validation')(require('./schema.json'))
+const { Buffer } = require('buffer')
+const schema = require('./schema.json')
+const validate = require('ipld-schema-validation')(schema)
 
 const cidSymbol = Symbol.for('@ipld/js-cid/CID')
 const isCID = node => !!(node && node[cidSymbol])
@@ -46,7 +48,12 @@ module.exports = (Block, codec) => {
     if (isCID(block)) block = await get(block)
     const decoded = Block.isBlock(block) ? block.decodeUnsafe() : block
     if (Buffer.isBuffer(decoded)) {
-      yield decoded.subarray(offset, end)
+      const chunk = decoded.subarray(offset, end)
+      // workaround until this is merged and released
+      // https://github.com/feross/buffer/pull/261
+      // istanbul ignore next
+      if (!Buffer.isBuffer(chunk)) Object.setPrototypeOf(chunk, Buffer.prototype)
+      yield chunk
       return
     }
 

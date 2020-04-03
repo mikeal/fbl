@@ -1,4 +1,5 @@
-const { it } = require('mocha')
+/* global it */
+const { Buffer } = require('buffer')
 const main = require('../')
 const test = it
 const assert = require('assert')
@@ -52,6 +53,7 @@ test('nested stream', async () => {
 const toBuffer = async gen => {
   const buffers = []
   for await (const buffer of gen) {
+    if (!Buffer.isBuffer(buffer)) throw new Error('not right')
     buffers.push(buffer)
   }
   return Buffer.concat(buffers)
@@ -105,7 +107,7 @@ test('read nested sliding', async () => {
   let end = 40
   while (end <= length) {
     const data = await read(root, get, start, end)
-    Buffer.compare(data, comp.subarray(start, end))
+    Buffer.compare(data, Buffer.from(comp.subarray(start, end)))
     start += 1
     end += 2
   }
