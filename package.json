@@ -14,7 +14,7 @@
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com> (https://www.mikealrogers.com/)",
   "license": "(Apache-2.0 AND MIT)",
   "dependencies": {
-    "@ipld/block": "^3.0.0",
+    "@ipld/block": "^4.0.0",
     "ipld-schema-validation": "^0.3.4"
   },
   "devDependencies": {
