@@ -4,8 +4,6 @@ const main = require('../')
 const test = it
 const assert = require('assert')
 const same = assert.deepStrictEqual
-const { promisify } = require('util')
-const randomBytes = promisify(require('crypto').randomBytes)
 const Block = require('@ipld/block')
 
 const chunk = Buffer.alloc(1024, '\n')
@@ -92,6 +90,8 @@ test('read nested full', async () => {
   same(data.length, comp.length)
   assert.ok(!Buffer.compare(data, comp))
 })
+
+const randomBytes = size => Buffer.alloc(size, Math.random().toString())
 
 test('read nested sliding', async () => {
   const buffer = await randomBytes(1024)

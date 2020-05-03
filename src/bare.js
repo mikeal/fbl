@@ -1,6 +1,6 @@
 const { Buffer } = require('buffer')
 const schema = require('./schema.json')
-const validate = require('ipld-schema-validation')(schema)
+const validate = require('@ipld/schema-validation')(schema)
 
 const cidSymbol = Symbol.for('@ipld/js-cid/CID')
 const isCID = node => !!(node && node[cidSymbol])
@@ -8,7 +8,7 @@ const isCID = node => !!(node && node[cidSymbol])
 const sum = (x, y) => x + y
 
 module.exports = (Block, codec) => {
-  const balanced = (limit=1000) => async function * (parts) {
+  const balanced = (limit = 1000) => async function * (parts) {
     parts = [...parts]
     if (parts.length > limit) {
       const size = Math.ceil(parts.length / Math.ceil(parts.length / limit))
