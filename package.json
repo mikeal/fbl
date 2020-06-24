@@ -3,27 +3,50 @@
   "version": "0.0.0-dev",
   "description": "`Flexible Byte Layout` is an advanced layout for representing binary data.",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
+    "build": "rollup --preserveModules --config rollup.config.js",
     "build:schema": "ipld-schema to-json README.md > src/schema.json",
-    "coverage": "nyc --reporter=html mocha test/test-*.js && npx http-server coverage",
-    "pretest": "standard",
-    "test": "hundreds mocha test/test-*.js && npm run test:browser",
+    "prepublishOnly": "npm run build",
+    "lint": "standard",
+    "test:cjs": "npm run build && mocha dist/test/test-*.cjs --timeout=5000",
+    "test:node": "hundreds mocha test/test-*.js --timeout=5000",
     "test:browser": "polendina --cleanup test/test-*.js",
-    "test:node": "mocha test/test-*.js"
+    "test": "npm run lint && npm run test:node && npm run test:browser && npm run test:cjs",
+    "coverage": "c8 --reporter=html mocha test/test-*.js && npx st -d coverage -p 8080"
+  },
+  "browser": {
+    "@ipld/fbl/schema": "./schema/index.js"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./index.js"
+    },
+    "./bare.js": {
+      "require": "./dist/bare.cjs",
+      "import": "./bare.js"
+    },
+    "./schema": {
+      "require": "./schema/schema.cjs",
+      "browser": "./schema/index.js",
+      "import": "./schema/schema.mjs"
+    }
   },
   "keywords": [],
   "author": "Mikeal Rogers <mikeal.rogers@gmail.com> (https://www.mikealrogers.com/)",
   "license": "(Apache-2.0 AND MIT)",
   "dependencies": {
-    "@ipld/block": "^4.0.0",
-    "@ipld/schema-validation": "0.0.0",
+    "@ipld/block": "^5.0.0",
+    "@ipld/schema-validation": "1.0.0",
     "buffer": "^5.6.0"
   },
   "devDependencies": {
-    "hundreds": "0.0.2",
+    "hundreds": "0.0.7",
     "ipld-schema": "^0.3.2",
-    "mocha": "^7.1.1",
+    "mocha": "^8.0.1",
     "polendina": "^1.0.0",
-    "standard": "^14.3.3"
+    "rollup": "^2.18.0",
+    "standard": "^14.3.4"
   }
 }

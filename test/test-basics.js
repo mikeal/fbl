@@ -1,12 +1,14 @@
 /* global it */
-const { Buffer } = require('buffer')
-const main = require('../')
-const test = it
-const assert = require('assert')
-const same = assert.deepStrictEqual
-const Block = require('@ipld/block')
+import main from '../index.js'
+import assert from 'assert'
+import Block from '@ipld/block/defaults.js'
 
-const chunk = Buffer.alloc(1024, '\n')
+const { coerce, equals, isBinary } = Block.multiformats.bytes
+
+const test = it
+const same = assert.deepStrictEqual
+
+const chunk = coerce(Buffer.alloc(1024, '\n'))
 
 const mkgen = async function * (length, _chunk = chunk) {
   let i = 0
@@ -19,7 +21,7 @@ const mkgen = async function * (length, _chunk = chunk) {
 const sum = (x, y) => x + y
 
 test('basic inline buffer', async () => {
-  same(chunk.length, main.size(chunk))
+  same(chunk.byteLength, main.size(chunk))
 })
 
 const testMany = async (i, limit) => {
@@ -27,12 +29,11 @@ const testMany = async (i, limit) => {
   let last
   const balanced = main.balanced(limit)
   for await (const block of main.from(mkgen(i), balanced)) {
-    const cid = await block.cid()
-    blocks[cid.codec].push(block)
+    blocks[block.codec].push(block)
     last = block
   }
   same(blocks.raw.length, i)
-  same(blocks.raw.map(b => b.decodeUnsafe().length).reduce(sum), i * 1024)
+  same(blocks.raw.map(b => b.decodeUnsafe().byteLength).reduce(sum), i * 1024)
   return [last, blocks['dag-cbor'], blocks.raw]
 }
 
@@ -51,10 +52,10 @@ test('nested stream', async () => {
 const toBuffer = async gen => {
   const buffers = []
   for await (const buffer of gen) {
-    if (!Buffer.isBuffer(buffer)) throw new Error('not right')
-    buffers.push(buffer)
+    if (!isBinary(buffer)) throw new Error('not right')
+    buffers.push(...buffer)
   }
-  return Buffer.concat(buffers)
+  return Uint8Array.from(buffers)
 }
 
 const load = async gen => {
@@ -78,8 +79,7 @@ test('read inline', async () => {
   const [get, root] = await load(main.from(single()))
   const data = await read(root, get)
   const comp = await toBuffer(single())
-  same(data.length, comp.length)
-  assert.ok(!Buffer.compare(data, comp))
+  assert.ok(equals(data, comp))
 })
 
 test('read nested full', async () => {
@@ -87,11 +87,11 @@ test('read nested full', async () => {
   const [get, root] = await load(main.from(mkgen(500), balanced))
   const data = await read(root, get)
   const comp = await toBuffer(mkgen(500))
-  same(data.length, comp.length)
-  assert.ok(!Buffer.compare(data, comp))
+  same(data.byteLength, comp.byteLength)
+  assert.ok(equals(data, comp))
 })
 
-const randomBytes = size => Buffer.alloc(size, Math.random().toString())
+const randomBytes = size => coerce(Buffer.alloc(size, Math.random().toString()))
 
 test('read nested sliding', async () => {
   const buffer = await randomBytes(1024)
@@ -99,15 +99,15 @@ test('read nested sliding', async () => {
   const [get, root] = await load(main.from(mkgen(10, buffer), balanced))
   const data = await read(root, get)
   const comp = await toBuffer(mkgen(10, buffer))
-  same(data.length, comp.length)
-  assert.ok(!Buffer.compare(data, comp))
+  same(data.byteLength, comp.byteLength)
+  assert.ok(equals(data, comp))
 
   const length = 10 * 1024
   let start = 0
   let end = 40
   while (end <= length) {
     const data = await read(root, get, start, end)
-    Buffer.compare(data, Buffer.from(comp.subarray(start, end)))
+    same(equals(data, coerce(comp.subarray(start, end))), true)
     start += 1
     end += 2
   }
