@@ -28,7 +28,8 @@ const relativeToMain = name => ({
 
 const plugins = [relativeToMain(pkg.name)]
 const dir = 'dist'
-const output = { dir, preserveModules: true, plugins, format: 'cjs', entryFileNames: '[name].cjs' }
+const preserveModules = true
+const output = { dir, plugins, format: 'cjs', entryFileNames: '[name].cjs' }
 const testdir = join(__dirname, 'test')
 const filter = name => name.startsWith('test-')
 const createConfig = f => ({ input: join('test', f), output })
