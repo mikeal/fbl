@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "build": "rollup --preserveModules --config rollup.config.js",
+    "build": "rollup --config rollup.config.js",
     "build:schema": "ipld-schema to-json README.md > schema/schema.json",
     "prepublishOnly": "npm run build",
     "lint": "standard",
