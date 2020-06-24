@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "rollup --preserveModules --config rollup.config.js",
-    "build:schema": "ipld-schema to-json README.md > src/schema.json",
+    "build:schema": "ipld-schema to-json README.md > schema/schema.json",
     "prepublishOnly": "npm run build",
     "lint": "standard",
     "test:cjs": "npm run build && mocha dist/test/test-*.cjs --timeout=5000",

@@ -1,5 +1,18 @@
 {
   "types": {
+    "FlexibleByteLayout": {
+      "kind": "union",
+      "representation": {
+        "kinded": {
+          "bytes": "Bytes",
+          "list": "NestedByteList"
+        }
+      }
+    },
+    "NestedByteList": {
+      "kind": "list",
+      "valueType": "NestedByte"
+    },
     "NestedByte": {
       "kind": "struct",
       "fields": {
@@ -9,25 +22,12 @@
         "part": {
           "type": {
             "kind": "link",
-            "expectedType": "FlexibleByteList"
+            "expectedType": "FlexibleByteLayout"
           }
         }
       },
       "representation": {
         "tuple": {}
-      }
-    },
-    "NestedByteList": {
-      "kind": "list",
-      "valueType": "NestedByte"
-    },
-    "FlexibleByteLayout": {
-      "kind": "union",
-      "representation": {
-        "kinded": {
-          "bytes": "Bytes",
-          "list": "NestedByteList"
-        }
       }
     }
   }
