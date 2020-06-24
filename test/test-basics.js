@@ -102,7 +102,7 @@ test('read nested sliding', async () => {
   same(data.byteLength, comp.byteLength)
   assert.ok(equals(data, comp))
 
-  const length = 10 * 1024
+  const length = 5 * 1024
   let start = 0
   let end = 40
   while (end <= length) {
