@@ -1,10 +1,8 @@
-import schema from '@ipld/fbl/schema'
+import schema from './schema.js'
 import createValidate from '@ipld/schema-validation'
 
 const validate = createValidate(schema)
-
-const cidSymbol = Symbol.for('@ipld/js-cid/CID')
-const isCID = node => !!(node && node[cidSymbol])
+const isCID = o => o && typeof o === 'object' && o.asCID && o.asCID === o
 
 const sum = (x, y) => x + y
 

@@ -1,7 +1,7 @@
 /* global it */
-import main from '../index.js'
+import main from '@ipld/fbl'
 import assert from 'assert'
-import Block from '@ipld/block/defaults.js'
+import Block from '@ipld/block/defaults'
 
 const { coerce, equals, isBinary } = Block.multiformats.bytes
 
