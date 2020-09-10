@@ -5,7 +5,11 @@ export default {
       representation: {
         kinded: {
           bytes: 'Bytes',
-          list: 'NestedByteList'
+          list: 'NestedByteList',
+          link: {
+            kind: 'link',
+            expectedType: 'FlexibleByteLayout'
+          }
         }
       }
     },
@@ -14,16 +18,22 @@ export default {
       valueType: 'NestedByte'
     },
     NestedByte: {
+      kind: 'union',
+      representation: {
+        kinded: {
+          bytes: 'Bytes',
+          list: 'NestedFBL'
+        }
+      }
+    },
+    NestedFBL: {
       kind: 'struct',
       fields: {
         length: {
           type: 'Int'
         },
         part: {
-          type: {
-            kind: 'link',
-            expectedType: 'FlexibleByteLayout'
-          }
+          type: 'FlexibleByteLayout'
         }
       },
       representation: {
