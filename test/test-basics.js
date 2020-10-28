@@ -1,9 +1,13 @@
 /* global it */
-import main from '@ipld/fbl'
+import * as codec from '@ipld/dag-cbor'
+import { sha256 as hasher } from 'multiformats/hashes/sha2'
+import * as main from '@ipld/fbl'
 import assert from 'assert'
-import Block from '@ipld/block/defaults'
+import { bytes } from 'multiformats'
+import raw from 'multiformats/codecs/raw'
+import { encode } from 'multiformats/block'
 
-const { coerce, equals, isBinary } = Block.multiformats.bytes
+const { coerce, equals, isBinary } = bytes
 
 const test = it
 const same = assert.deepStrictEqual
@@ -25,16 +29,17 @@ test('basic inline buffer', async () => {
 })
 
 const testMany = async (i, limit) => {
-  const blocks = { 'dag-cbor': [], raw: [] }
+  const blocks = { 113: [], 85: [] }
   let last
   const balanced = main.balanced(limit)
-  for await (const block of main.from(mkgen(i), balanced)) {
-    blocks[block.codec].push(block)
+  for await (const block of main.fromIterable(mkgen(i), { algo: balanced, codec, hasher })) {
+    blocks[block.cid.code].push(block)
     last = block
   }
-  same(blocks.raw.length, i)
-  same(blocks.raw.map(b => b.decodeUnsafe().byteLength).reduce(sum), i * 1024)
-  return [last, blocks['dag-cbor'], blocks.raw]
+  const raws = blocks['85']
+  same(raws.length, i)
+  same(raws.map(b => b.value.byteLength).reduce(sum), i * 1024)
+  return [last, blocks['113'], blocks.raw]
 }
 
 test('basic stream', async () => {
@@ -62,7 +67,7 @@ const load = async gen => {
   const store = new Map()
   let last
   for await (const block of gen) {
-    const cid = await block.cid()
+    const { cid } = block
     store.set(cid.toString(), block)
     last = block
   }
@@ -74,9 +79,9 @@ const read = async (...args) => toBuffer(main.read(...args))
 
 test('read inline', async () => {
   same(await read(chunk), chunk)
-  same(await read(Block.encoder(chunk, 'raw')), chunk)
+  same(await read(await encode({ value: chunk, codec: raw, hasher })), chunk)
   const single = async function * () { yield chunk }
-  const [get, root] = await load(main.from(single()))
+  const [get, root] = await load(main.fromIterable(single(), { codec, hasher }))
   const data = await read(root, get)
   const comp = await toBuffer(single())
   assert.ok(equals(data, comp))
@@ -84,7 +89,7 @@ test('read inline', async () => {
 
 test('read nested full', async () => {
   const balanced = main.balanced(100)
-  const [get, root] = await load(main.from(mkgen(500), balanced))
+  const [get, root] = await load(main.fromIterable(mkgen(500), { codec, hasher, algo: balanced }))
   const data = await read(root, get)
   const comp = await toBuffer(mkgen(500))
   same(data.byteLength, comp.byteLength)
@@ -96,7 +101,7 @@ const randomBytes = size => coerce(Buffer.alloc(size, Math.random().toString()))
 test('read nested sliding', async () => {
   const buffer = await randomBytes(1024)
   const balanced = main.balanced(2)
-  const [get, root] = await load(main.from(mkgen(10, buffer), balanced))
+  const [get, root] = await load(main.fromIterable(mkgen(10, buffer), { algo: balanced, codec, hasher }))
   const data = await read(root, get)
   const comp = await toBuffer(mkgen(10, buffer))
   same(data.byteLength, comp.byteLength)

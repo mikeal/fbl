@@ -5,21 +5,23 @@ It is flexible enough to support very small and very large (multi-block) binary 
 # Usage
 
 ```javascript
-const fbl = require('@ipld/fbl')
-const fs = require('fs')
+import * as codec from '@ipld/dag-cbor'
+import { sha256 as hasher } from 'multiformats/hashes/sha2'
+import { fromIterable } from '@ipld/fbl'
+import fs from 'fs'
 
 const stream = fs.createReadStream('path/to/file')
 
-for await (const block of fbl.from(stream)) {
+for await (const block of fromIterable(stream, { codec, hasher })) {
   storage.put(block)
 }
 ```
 
 ## API
 
-### `fs.from(asyncIterable, algorithm=balanced())`
+### `fs.fromIterable(asyncIterable, { codec, hasher, algorithm=balanced() })`
 
-This method returns an async iterable of [`Block`](https://github.com/ipld/js-block) instances.
+This method returns an async iterable of `multiformats/block` instances.
 
 It accepts any async iterable, but the iterable must only yield instances of `Buffer`.
 
