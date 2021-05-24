@@ -4,6 +4,7 @@
   "description": "`Flexible Byte Layout` is an advanced layout for representing binary data.",
   "main": "src/index.js",
   "type": "module",
+  "types": "types.d.ts",
   "scripts": {
     "lint": "standard",
     "build": "npm_config_yes=true npx ipjs@latest build --tests",
@@ -29,7 +30,7 @@
   "dependencies": {
     "@ipld/schema-validation": "1.1.0",
     "buffer": "^5.7.0",
-    "multiformats": "^4.3.1"
+    "multiformats": "^8.0.6"
   },
   "devDependencies": {
     "@ipld/dag-cbor": "^2.0.2",
