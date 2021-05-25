@@ -3,7 +3,7 @@ import { CID } from 'multiformats/cid';
 import { MultihashHasher } from 'multiformats/hashes/interface';
 
 export function fromIterable<T, Code extends number>(
-  iterable: Iterable<T>,
+  iterable: AsyncIterable<T>,
   { hasher, codec, algo }: {
     hasher: MultihashHasher,
     codec: BlockEncoder<Code, T>,
