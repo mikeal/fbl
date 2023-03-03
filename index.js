@@ -1,6 +1,6 @@
 import { bytes } from 'multiformats'
 import { encode } from 'multiformats/block'
-import raw from 'multiformats/codecs/raw'
+import * as raw from 'multiformats/codecs/raw'
 import schema from './schema.js'
 import createValidate from '@ipld/schema-validation'
 

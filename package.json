@@ -2,17 +2,11 @@
   "name": "@ipld/fbl",
   "version": "0.0.0-dev",
   "description": "`Flexible Byte Layout` is an advanced layout for representing binary data.",
-  "main": "src/index.js",
   "type": "module",
   "scripts": {
     "lint": "standard",
-    "build": "npm_config_yes=true npx ipjs@latest build --tests",
     "build:schema": "echo 'export default ' > schema.js && ipld-schema to-json README.md >> schema.js && standard --fix schema.js",
-    "publish": "npm_config_yes=true npx ipjs@latest publish",
-    "test:cjs": "npm run build && mocha dist/cjs/node-test/test-*.js",
-    "test:node": "hundreds mocha test/test-*.js",
-    "test:browser": "polendina --cleanup dist/cjs/node-test/test-*.js",
-    "test": "npm run lint && npm run test:node && npm run test:cjs && npm run test:browser",
+    "test": "hundreds mocha test/test-*.js",
     "coverage": "c8 --reporter=html mocha test/test-*.js && npx st -d coverage -p 8080"
   },
   "exports": {
@@ -28,15 +22,15 @@
   "license": "(Apache-2.0 AND MIT)",
   "dependencies": {
     "@ipld/schema-validation": "1.1.0",
-    "buffer": "^5.7.0",
-    "multiformats": "^4.3.1"
+    "multiformats": "^11.0.1"
   },
   "devDependencies": {
-    "@ipld/dag-cbor": "^2.0.2",
+    "@ipld/dag-cbor": "^9.0.0",
+    "buffer": "^6.0.3",
     "hundreds": "0.0.9",
-    "ipld-schema": "^0.4.0",
-    "mocha": "^8.2.0",
-    "polendina": "^1.1.0",
-    "standard": "^15.0.1"
+    "ipld-schema": "^3.0.3",
+    "mocha": "^10.2.0",
+    "polendina": "^3.1.0",
+    "standard": "^17.0.0"
   }
 }

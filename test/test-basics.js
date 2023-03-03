@@ -4,7 +4,7 @@ import { sha256 as hasher } from 'multiformats/hashes/sha2'
 import * as main from '@ipld/fbl'
 import assert from 'assert'
 import { bytes } from 'multiformats'
-import raw from 'multiformats/codecs/raw'
+import * as raw from 'multiformats/codecs/raw'
 import { encode } from 'multiformats/block'
 
 const { coerce, equals, isBinary } = bytes
