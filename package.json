@@ -24,6 +24,10 @@
     "@ipld/schema-validation": "1.1.0",
     "multiformats": "^11.0.1"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mikeal/fbl"
+  },
   "devDependencies": {
     "@ipld/dag-cbor": "^9.0.0",
     "buffer": "^6.0.3",
