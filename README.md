@@ -1,5 +1,3 @@
-**This project is no longer under active development and has been archived. If you would like to revive this project using the latest IPLD JavaScript stack, please open an issue on https://github.com/ipld/ipld for discussion (or just fork this repository!).**
-
 `Flexible Byte Layout` is an advanced layout for representing binary data.
 
 It is flexible enough to support very small and very large (multi-block) binary data.
